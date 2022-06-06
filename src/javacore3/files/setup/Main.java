@@ -28,10 +28,10 @@ public class Main {
         File tempLogs = new File(temp, "temp.txt");
         StringBuilder logs = new StringBuilder();
         File[] catalogs = {dir1, src, res, saveGames, temp, main, test, drawables, icons, vectors};
-        File[] filesJava = {mainFile, utils,tempLogs};
+        File[] filesJava = {mainFile, utils, tempLogs};
         try {
             for (File catalog :
-            catalogs) {
+                    catalogs) {
                 if (!catalog.exists()) {
                     catalog.mkdir();
                     logs.append(getLog(catalog));
@@ -55,7 +55,7 @@ public class Main {
         }
         try (FileWriter fileWriter = new FileWriter(tempLogs);) {
             fileWriter.write(String.valueOf(logs));
-        } catch(IOException r){
+        } catch (IOException r) {
             System.out.println(r.getMessage());
         }
 

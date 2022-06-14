@@ -8,6 +8,19 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
+
+    public static void deleteFiles(List <File> fileList) {
+        for (File file:
+             fileList) {
+            try {
+                file.delete();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+}
+
     public static File savegames(String dir, GameProgress gameProgress) {
         try (FileOutputStream fos = new FileOutputStream(dir)) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -19,20 +32,23 @@ public class Main {
     }
 
     public static void zip(File zipdir, List<File> savings) {
-        for (File zippingFile :
-                savings) {
-            try (ZipOutputStream zot = new ZipOutputStream(new FileOutputStream(zipdir));
-                 FileInputStream fis = new FileInputStream(zippingFile);) {
-                ZipEntry entry = new ZipEntry(String.valueOf(zippingFile));
+        try (ZipOutputStream zot = new ZipOutputStream(new FileOutputStream(zipdir));) {
+            for (File zipFile :
+                    savings) {
+                FileInputStream fis = new FileInputStream(zipFile);
+                ZipEntry entry = new ZipEntry(String.valueOf(zipFile));
                 zot.putNextEntry(entry);
                 byte[] buffer = new byte[fis.available()];
                 fis.read(buffer);
                 zot.write(buffer);
                 zot.closeEntry();
-            } catch (IOException ex) {
-                ex.getMessage();
+                fis.close();
             }
+        } catch (IOException ex) {
+            ex.getMessage();
+
         }
+
     }
 
 
@@ -47,8 +63,7 @@ public class Main {
         List<File> savings = Arrays.asList(save, save1, save2);
         File zipdir = new File("D://Games/savegames/save.zip");
         zip(zipdir, savings);
-
+        deleteFiles(savings);
 
     }
-
 }

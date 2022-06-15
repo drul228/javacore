@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
 
-    public static void deleteFiles(List <File> fileList) {
-        for (File file:
-             fileList) {
+    public static void deleteFiles(List<File> fileList) {
+        for (File file :
+                fileList) {
             try {
                 file.delete();
             } catch (Exception e) {
@@ -19,7 +20,20 @@ public class Main {
             }
         }
 
-}
+    }
+
+    public static GameProgress openprogress(String save) {
+        GameProgress gameProgress = null;
+        try (FileInputStream fis = new FileInputStream(save);
+             ObjectInputStream ois = new ObjectInputStream(fis);) {
+            gameProgress = (GameProgress) ois.readObject();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            return gameProgress;
+        }
+    }
 
     public static File savegames(String dir, GameProgress gameProgress) {
         try (FileOutputStream fos = new FileOutputStream(dir)) {
@@ -51,6 +65,23 @@ public class Main {
 
     }
 
+    public static void unZip(String zipdir, String dir) {
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(zipdir))) {
+            ZipEntry entry;
+            while ((entry = zin.getNextEntry()) != null) {
+                FileOutputStream fout = new FileOutputStream(entry.getName());
+                for (int c = zin.read(); c != -1; c = zin.read()) {
+                    fout.write(c);
+                }
+                fout.flush();
+                zin.closeEntry();
+                fout.close();
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     public static void main(String[] args) {
 
@@ -64,6 +95,8 @@ public class Main {
         File zipdir = new File("D://Games/savegames/save.zip");
         zip(zipdir, savings);
         deleteFiles(savings);
-
+        unZip("D://Games/savegames/save.zip", "D://Games/savegames");
+        GameProgress gameProgressOpen = openprogress("D://Games/savegames/save.dat");
+        System.out.println(gameProgressOpen;
     }
 }
